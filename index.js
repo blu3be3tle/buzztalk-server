@@ -1,3 +1,6 @@
+const express = require('express');
+const { createServer } = require('node:http');
+
 const app = express();
 const http = require('http');
 const cors = require('cors');
@@ -12,6 +15,9 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
   },
 });
+
+
+
 
 server.listen(3000, () => {
   console.log('SERVER RUNNING');
