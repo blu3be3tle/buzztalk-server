@@ -1,6 +1,6 @@
 const express = require('express');
 const { createServer } = require('node:http');
-
+const { join } = require('node:path');
 const app = express();
 const http = require('http');
 const cors = require('cors');
@@ -16,15 +16,17 @@ const io = new Server(server, {
   },
 });
 
+app.get('/', (req, res) => {
+  res.sendFile(join(__dirname, 'index.js'));
+});
+
 io.on('connection', (socket) => {
   console.log('a user connected');
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
-
 });
-
 
 server.listen(3000, () => {
   console.log('SERVER RUNNING');
