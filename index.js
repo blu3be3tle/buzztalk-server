@@ -23,8 +23,8 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   console.log('a user connected');
 
-  socket.on('send_message', (data) => {
-    console.log(data);
+  socket.on('send_message', (msg) => {
+    socket.broadcast.emit('send_message', msg);
   });
 
   socket.on('disconnect', () => {
