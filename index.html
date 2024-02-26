@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Socket.IO chat</title>
+    <style>
+      body {
+        margin: 0;
+        padding-bottom: 3rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+      }
+
+      #form {
+        background: rgba(0, 0, 0, 0.15);
+        padding: 0.25rem;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        height: 3rem;
+        box-sizing: border-box;
+        backdrop-filter: blur(10px);
+      }
+      #input {
+        border: none;
+        padding: 0 1rem;
+        flex-grow: 1;
+        border-radius: 2rem;
+        margin: 0.25rem;
+      }
+      #input:focus {
+        outline: none;
+      }
+      #form > button {
+        background: #333;
+        border: none;
+        padding: 0 1rem;
+        margin: 0.25rem;
+        border-radius: 3px;
+        outline: none;
+        color: #fff;
+      }
+
+      #chatHistory {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      #chatHistory > li {
+        padding: 0.5rem 1rem;
+      }
+      #chatHistory > li:nth-child(odd) {
+        background: #efefef;
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="chatHistory"></ul>
+    <!-- <input type="text" /> -->
+    <!-- <button style="cursor: pointer" onclick="createConnection()">Send</button> -->
+    <h1 id="showTime"></h1>
+    <h1 id="showBroadcastData"></h1>
+    <p id="welcomeMsg"></p>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" />
+      <button style="cursor: pointer">Send</button>
+      <button id="toggle-btn">Disconnect</button>
+    </form>
+    <!-- Link this file from node_modules/socket.io/socket.io.js with this html  -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      // Call socket io
+      const socket = io();
+      // get the elements by id
+      const form = document.getElementById("form");
+      const input = document.getElementById("input");
+      const chatHistory = document.getElementById("chatHistory");
+      const toggleButton = document.getElementById("toggle-btn");
+      const broadcastData = document.getElementById("showBroadcastData");
+
+      // Send data from client to server
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (input.value) {
+          // Send data from client to server
+          socket.emit("chat message", input.value);
+          input.value = "";
+        }
+      });
+
+      // Disconnect & Connect to socket through button
+      toggleButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (socket.connected) {
+          toggleButton.innerText = "Connect";
+          socket.disconnect();
+        } else {
+          toggleButton.innerText = "Disconnect";
+          socket.connect();
+        }
+      });
+
+      // Catch & Print Broadcasted Data
+      socket.on("myBroadcast", (Bdata) => {
+        broadcastData.innerText = Bdata;
+      });
+
+      // Catch data from server & print on screen
+      /* socket.on("message", (welcomeMsg) => {
+        document.getElementById("welcomeMsg").innerText = welcomeMsg;
+        // document.write(welcomeMsg);
+      }); */
+
+      // Catch data from server to client & print it
+      socket.on("currentTime", (time) => {
+        document.getElementById("showTime").innerText = time;
+      });
+
+      // Show sent message on screen
+      socket.on("chat refer", (msg) => {
+        const item = document.createElement("li");
+        item.textContent = msg;
+        chatHistory.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+    </script>
+  </body>
+</html>
