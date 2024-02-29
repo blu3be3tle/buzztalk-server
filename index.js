@@ -7,14 +7,14 @@ const cors = require('cors');
 const { Server } = require('socket.io');
 app.use(cors());
 
-const server = http.createServer(app);
-
-const io = new Server(server, {
+const io = require('socket.io')(process.env.PORT || 3000, {
   cors: {
     origin: 'http://localhost:5173',
     methods: ['GET', 'POST'],
   },
 });
+
+
 
 app.get('/', (req, res) => {
   res.sendFile(join(__dirname, 'index.js'));
@@ -32,6 +32,6 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(3000, () => {
+Server.listen(3000, () => {
   console.log('SERVER RUNNING');
 });
