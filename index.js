@@ -14,8 +14,6 @@ const io = require('socket.io')(process.env.PORT || 3000, {
   },
 });
 
-
-
 app.get('/', (req, res) => {
   res.sendFile(join(__dirname, 'index.js'));
 });
@@ -30,8 +28,4 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
-});
-
-Server.listen(3000, () => {
-  console.log('SERVER RUNNING');
 });
