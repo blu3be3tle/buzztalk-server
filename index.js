@@ -1,6 +1,4 @@
 const express = require('express');
-const { createServer } = require('node:http');
-const { join } = require('node:path');
 const app = express();
 const http = require('http');
 const cors = require('cors');
@@ -16,19 +14,20 @@ const io = new Server(server, {
   },
 });
 
-app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, 'index.js'));
-});
-
 io.on('connection', (socket) => {
-  console.log('a user connected');
+  console.log(`User Connected: ${socket.id}`);
 
-  socket.on('send_message', (msg) => {
-    socket.broadcast.emit('send_message', msg);
+  socket.on('join_room', (data) => {
+    socket.join(data);
+    console.log(`User with ID: ${socket.id} joined room: ${data}`);
+  });
+
+  socket.on('send_message', (data) => {
+    socket.to(data.room).emit('receive_message', data);
   });
 
   socket.on('disconnect', () => {
-    console.log('user disconnected');
+    console.log('User Disconnected', socket.id);
   });
 });
 
